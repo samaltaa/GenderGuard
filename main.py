@@ -1,7 +1,28 @@
 import cv2
 import time
 import datetime
+import numpy as np
+import pygame
 
+#the gender model architecture
+GENDER_MODEL = 'weights/deploy_gender.prototxt'
+
+#the gender model pre-trained weights
+GENDER_PROTO = 'weights/gender_net.caffemodel'
+
+# Each Caffe Model impose the shape of the input image also image preprocessing is required like mean
+# substraction to eliminate the effect of illunination changes
+MODEL_MEAN_VALUES = (78.4263377603, 87.7689143744, 114.895847746)
+
+# Represent the gender classes
+GENDER_LIST = ['Male', 'Female']
+FACE_PROTO = "weights/deploy.prototxt.txt"
+FACE_MODEL = "weights/res10_300x300_ssd_iter_140000_fp16.caffemodel"
+
+#load face Caffe model
+face_net = cv2.dnn.readNetFromCaffe(FACE_PROTO, FACE_MODEL)
+#load gender prediction model
+gender_net = cv2.dnn.readNetFromCaffe(GENDER_MODEL, GENDER_PROTO)
 
 # define a video capture object
 cap = cv2.VideoCapture(0)
@@ -18,7 +39,6 @@ frame_size = (int(cap.get(3)), int(cap.get(4)))
 #define the codec
 fourcc = cv2.VideoWriter_fourcc(*"mp4v")
 
-# Initialize Firebase Storage
 
 
 while(True):
@@ -36,6 +56,7 @@ while(True):
         minSize=(30, 30),
         flags = cv2.CASCADE_SCALE_IMAGE
     )
+    
     # this entire block of code takes care of beginning recoding once
     # face is detected, if face is undetected for 5+ seconds, recording stops
     if len(faces) > 0:
@@ -64,6 +85,18 @@ while(True):
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
 
+        #crop the face region for gender detection
+        face_roi = frame[y:y + h, x:x + w]
+
+        #perform gender detection using the loaded model
+        gender_blob = cv2.dnn.blobFromImage(face_roi, scalefactor=1.0, size=(227, 227), mean=MODEL_MEAN_VALUES, swapRB=True)
+        gender_net.setInput(gender_blob)
+        gender_preds = gender_net.forward()
+        gender = GENDER_LIST[gender_preds[0].argmax()]
+
+        #overlay the gender information on the frame
+        cv2.putText(frame, f'Gender: {gender}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+                  
 
     #display the resulting frame
     cv2.imshow('frame', frame)
