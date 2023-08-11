@@ -24,6 +24,12 @@ face_net = cv2.dnn.readNetFromCaffe(FACE_PROTO, FACE_MODEL)
 #load gender prediction model
 gender_net = cv2.dnn.readNetFromCaffe(GENDER_MODEL, GENDER_PROTO)
 
+#function(s) for alarm triggering
+def sound_alarm():
+     pygame.mixer.init()
+     pygame.mixer.music.load('alarm_sound.wav')
+     pygame.mixer.music.play()
+
 # define a video capture object
 cap = cv2.VideoCapture(0)
 
@@ -96,6 +102,12 @@ while(True):
 
         #overlay the gender information on the frame
         cv2.putText(frame, f'Gender: {gender}', (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
+
+        #if a man is the frame, alarm goes off, otherwise it stops
+        if gender == "Male":
+            sound_alarm()
+        else:
+             break
                   
 
     #display the resulting frame
