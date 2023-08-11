@@ -1,5 +1,5 @@
 # GenderGuard
-Empowering Secure Spaces with AI Gender Detection
+Empowering Secure Spaces with computer vision Gender Detection
 
 # Gender Detection System
 
