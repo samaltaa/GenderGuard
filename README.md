@@ -16,7 +16,7 @@ This repository contains a gender detection system that utilizes computer vision
 
 ## Introduction
 
-The gender detection system implemented in this repository utilizes a pre-trained deep neural network model to detect faces in a video stream and classify the gender of the detected faces as either male or female. The system employs the Haar Cascade classifier for face detection and a Convolutional Neural Network (CNN) for gender classification. An alarm is triggered when a male is detected in the video stream.
+The gender detection system in this repository utilizes the OpenCV library and HAAR cascade classifiers to identify faces in a video stream and classify their gender as male or female. The system employs HAAR cascade classifiers for face detection and uses OpenCV functionalities to process the video frames. An alarm is triggered specifically when a male face is detected in the video stream.
 
 ## Use Cases
 
